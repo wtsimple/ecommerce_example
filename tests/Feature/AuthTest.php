@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -23,5 +24,22 @@ class AuthTest extends TestCase
         $response->assertOk();
 
         $this->assertDatabaseHas('users', ['email' => $email, 'name' => $name]);
+    }
+
+    public function test_it_generates_tokens_for_users()
+    {
+        // create user
+        $user = User::factory()->createOne();
+        // login as the user
+        $res = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        // verify you get the token
+        $res->assertOk()->assertJson(function (AssertableJson $json) use ($user) {
+           $json->has('token');
+           $json->where('user', $user->id);
+        });
     }
 }

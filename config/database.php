@@ -2,16 +2,15 @@
 
 use Illuminate\Support\Str;
 
-/**
- * @return string
- */
-function sqlite_db(): string
-{
-    if (env('DB_DATABASE') === ':memory') {
-        return ':memory';
-    }
+if (!function_exists('sqlite_db')) {
+    function sqlite_db(): string
+    {
+        if (env('DB_DATABASE') === ':memory') {
+            return ':memory';
+        }
 
-    return env('DB_DATABASE') ? database_path(env('DB_DATABASE')) : database_path('database.sqlite');
+        return env('DB_DATABASE') ? database_path(env('DB_DATABASE')) : database_path('database.sqlite');
+    }
 }
 
 return [

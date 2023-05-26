@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Knuckles\Scribe\Attributes\Group;
 
 #[Group('Auth')]
@@ -26,6 +28,21 @@ class AuthController extends Controller
         $user->password = $request->input('password');
         $user->name = $request->input('name');
         $user->save();
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $user = Auth::user();
+        $token = $user->createToken(
+            'auth-token',
+            ['*'],
+            now()->addMinutes(config('sanctum.expiration'))
+        )->plainTextToken;
+
+        return [
+            'user' => $user->id,
+            'token' => $token,
+        ];
     }
 
     public function user(Request $request)
