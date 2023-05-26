@@ -16,6 +16,6 @@ class Product extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'sku', 'name', 'price', 'amount', 'description', 'additional_info', 'avg_rating'
+        'sku', 'name', 'price', 'amount', 'description', 'additional_info', 'avg_rating', 'category'
     ];
 }

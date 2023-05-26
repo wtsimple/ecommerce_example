@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'additional_info' => $this->additional_info,
             'avg_rating' => $this->avg_rating,
             'tags' => $this->tags,
+            'category' => $this->category
         ];
     }
 }
