@@ -12,6 +12,10 @@ abstract class TestCase extends BaseTestCase
     use RefreshDatabase;
 
     protected Generator $faker;
+    /**
+     * @var bool seed the database before testing
+     */
+    protected bool $seed = true;
 
     protected function setUp(): void
     {
