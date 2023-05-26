@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,5 +21,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'user']);
+
+Route::prefix('')->group(function () {
+    // Anybody can read the products
+    Route::get('/product/{product}', [ProductController::class, 'show']);
+    // CUD requires authentication
+    Route::prefix('')->middleware('auth:sanctum')->group(function() {
+
+    });
+});
 
 
