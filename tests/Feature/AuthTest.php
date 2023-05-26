@@ -10,7 +10,7 @@ class AuthTest extends TestCase
 
     public function test_it_registers_user(): void
     {
-        $pass = $this->faker->password;
+        $pass = $this->faker->password(10);
         $email = $this->faker->email;
         $name = $this->faker->name;
         $response = $this->postJson('/api/register', [
