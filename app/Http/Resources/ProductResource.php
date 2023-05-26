@@ -21,7 +21,8 @@ class ProductResource extends JsonResource
             'amount' => $this->amount,
             'description' => $this->description,
             'additional_info' => $this->additional_info,
-            'avg_rating' => $this->avg_rating
+            'avg_rating' => $this->avg_rating,
+            'tags' => $this->tags,
         ];
     }
 }

@@ -24,6 +24,7 @@ class ProductFactory extends Factory
             'description' => $this->faker->text(),
             'additional_info' => $this->faker->text(),
             'avg_rating' => $this->faker->randomFloat(2,0,5),
+            'tags' => ['tag1', 'tag2']
         ];
     }
 }
