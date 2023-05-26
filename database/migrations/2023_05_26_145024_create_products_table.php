@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('additional_info')->nullable();
 
+            $table->float('avg_rating')->default(0);
+
             $table->timestamps();
         });
     }
