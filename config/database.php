@@ -2,6 +2,18 @@
 
 use Illuminate\Support\Str;
 
+/**
+ * @return string
+ */
+function sqlite_db(): string
+{
+    if (env('DB_DATABASE') === ':memory') {
+        return ':memory';
+    }
+
+    return env('DB_DATABASE') ? database_path(env('DB_DATABASE')) : database_path('database.sqlite');
+}
+
 return [
 
     /*
@@ -38,7 +50,7 @@ return [
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),
-            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'database' => sqlite_db(),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
