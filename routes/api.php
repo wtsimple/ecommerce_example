@@ -23,7 +23,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'user']);
 
 Route::prefix('')->group(function () {
-    // Anybody can read the products
+    // Anybody can read
     Route::get('/product/{product}', [ProductController::class, 'show']);
     // CUD requires authentication
     Route::prefix('')->middleware('auth:sanctum')->group(function() {

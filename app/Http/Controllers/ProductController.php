@@ -6,6 +6,8 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -60,6 +62,7 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->all());
+
         return response(['data' => new ProductResource($product)]);
     }
 
@@ -68,6 +71,9 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        if (!Auth::user()->can(Role::DELETE_PRODUCT)) {
+            abort(403);
+        }
         $product->delete();
     }
 }
