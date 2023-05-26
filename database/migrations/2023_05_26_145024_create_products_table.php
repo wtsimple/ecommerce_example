@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('amount')->default(0);
             $table->text('description')->nullable();
             $table->text('additional_info')->nullable();
+
             $table->timestamps();
         });
     }
