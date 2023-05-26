@@ -10,6 +10,16 @@ use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
+    private array $privilegedUsers;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $admin = UserFactory::createOneAdmin();
+        $editor = UserFactory::createOneEditor();
+        $this->privilegedUsers = [$admin, $editor];
+    }
+
     public function test_guest_user_can_read_product()
     {
         $product = Product::factory()->createOne();
@@ -27,57 +37,54 @@ class ProductTest extends TestCase
         });
     }
 
-    public function test_admin_user_can_crud_product()
+    public function test_privileged_users_can_delete_product()
     {
-        $admin = UserFactory::createOneAdmin();
+        foreach ($this->privilegedUsers as $user) {
+            Sanctum::actingAs($user);
 
-        Sanctum::actingAs($admin);
+            $productToDelete = Product::factory()->createOne();
+            $this->assertDatabaseHas('products', ['sku' => $productToDelete->sku]);
+            $res = $this->deleteJson("/api/product/$productToDelete->sku");
+            $res->assertOk();
+            $this->assertDatabaseMissing('products', ['sku' => $productToDelete->sku]);
+        }
 
-        // delete
-        $productToDelete = Product::factory()->createOne();
-        $this->assertDatabaseHas('products', ['sku' => $productToDelete->sku]);
-        $res = $this->deleteJson("/api/product/$productToDelete->sku");
-        $res->assertOk();
-        $this->assertDatabaseMissing('products', ['sku' => $productToDelete->sku]);
-
-        //create
-        $createData = [
-            'sku' => $this->faker->uuid,
-            'name' => $this->faker->text(50),
-            'price' => $this->faker->numberBetween(1, 200),
-            'amount' => $this->faker->numberBetween(0, 100),
-            'description' => $this->faker->text(),
-            'additional_info' => $this->faker->text(),
-            'avg_rating' => $this->faker->randomFloat(2, 0, 5)
-        ];
-        $res = $this->postJson('/api/product', $createData);
-        $res->assertStatus(201)->assertJson(function (AssertableJson $json) use ($createData) {
-            foreach ($createData as $key => $val) {
-                $json->where('data.' . $key, $val);
-            }
-        });
-        $this->assertDatabaseHas('products', $createData);
-
-        // update
-        $productToUpdate = Product::factory()->createOne();
-        $updateData = [
-            'sku' => $productToUpdate->sku,
-            'name' => $this->faker->text(50),
-            'price' => $this->faker->numberBetween(1, 200),
-            'amount' => $this->faker->numberBetween(0, 100),
-            'description' => $this->faker->text(),
-            'additional_info' => $this->faker->text(),
-            'avg_rating' => $this->faker->randomFloat(2, 0, 5)
-        ];
-        $res = $this->patchJson("/api/product/$productToUpdate->sku", $updateData);
-        $res->assertOk()->assertJson(function (AssertableJson $json) use ($updateData) {
-            foreach ($updateData as $key => $val) {
-                $json->where('data.' . $key, $val);
-            }
-        });
-        $this->assertDatabaseHas('products', $updateData);
     }
-    // editor user can create/edit/delete product
+
+    public function test_privileged_users_can_create_product()
+    {
+        foreach ($this->privilegedUsers as $user) {
+            Sanctum::actingAs($user);
+            $createData = Product::factory()->makeOne()->toArray();
+            $res = $this->postJson('/api/product', $createData);
+            $res->assertStatus(201)->assertJson(function (AssertableJson $json) use ($createData) {
+                foreach ($createData as $key => $val) {
+                    $json->where('data.' . $key, $val);
+                }
+            });
+            $this->assertDatabaseHas('products', $createData);
+        }
+    }
+
+    public function test_privileged_users_can_update_product()
+    {
+        foreach ($this->privilegedUsers as $user) {
+            Sanctum::actingAs($user);
+
+            $productToUpdate = Product::factory()->createOne();
+            $updateData = Product::factory()->makeOne()->toArray();
+            $updateData['sku'] = $productToUpdate->sku; // same sku is needed to update
+            $res = $this->patchJson("/api/product/$productToUpdate->sku", $updateData);
+            $res->assertOk()->assertJson(function (AssertableJson $json) use ($updateData) {
+                foreach ($updateData as $key => $val) {
+                    $json->where('data.' . $key, $val);
+                }
+            });
+            $this->assertDatabaseHas('products', $updateData);
+        }
+    }
+
+
     // basic user cannot create/edit/delete product
     // guest user cannot create/edit/delete product
 }
