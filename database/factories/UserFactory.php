@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -34,5 +36,19 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public static function createOneAdmin(?array $state = null): User {
+        $admin = User::factory()->createOne($state);
+        $admin->assignRole(Role::ADMIN);
+
+        return $admin;
+    }
+
+    public static function createOneEditor(?array $state = null): User {
+        $editor = User::factory()->createOne($state);
+        $editor->assignRole(Role::EDITOR);
+
+        return $editor;
     }
 }

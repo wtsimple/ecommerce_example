@@ -12,4 +12,8 @@ class Product extends Model
     protected $primaryKey = 'sku';
     protected $keyType = 'string';
     public $incrementing = false;
+
+    protected $fillable = [
+        'sku', 'name', 'price', 'amount', 'description', 'additional_info', 'avg_rating'
+    ];
 }

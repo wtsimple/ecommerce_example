@@ -16,17 +16,21 @@ class Role extends SpatieRole
         self::EDITOR,
     ];
 
+    const CREATE_PRODUCT = 'create product';
+    const UPDATE_PRODUCT = 'update product';
+    const DELETE_PRODUCT = 'delete product';
+
     const CAPABILITIES = [
         'admin' => [
             'promote editor',
-            'edit product',
-            'create product',
-            'delete product',
+            self::UPDATE_PRODUCT,
+            self::CREATE_PRODUCT,
+            self::DELETE_PRODUCT,
         ],
         'editor' => [
-            'edit product',
-            'create product',
-            'delete product',
+            self::UPDATE_PRODUCT,
+            self::CREATE_PRODUCT,
+            self::DELETE_PRODUCT,
         ],
     ];
 }

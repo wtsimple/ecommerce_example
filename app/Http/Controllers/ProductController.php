@@ -30,7 +30,12 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        $product = new Product($request->all());
+        $product->save();
+
+        return response([
+            'data' => new ProductResource($product)
+        ], 201);
     }
 
     /**
@@ -54,7 +59,8 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $product->update($request->all());
+        return response(['data' => new ProductResource($product)]);
     }
 
     /**
@@ -62,6 +68,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
     }
 }

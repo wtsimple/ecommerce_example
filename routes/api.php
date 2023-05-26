@@ -27,7 +27,9 @@ Route::prefix('')->group(function () {
     Route::get('/product/{product}', [ProductController::class, 'show']);
     // CUD requires authentication
     Route::prefix('')->middleware('auth:sanctum')->group(function() {
-
+        Route::post('/product', [ProductController::class, 'store']);
+        Route::delete('/product/{product}', [ProductController::class, 'destroy']);
+        Route::patch('/product/{product}', [ProductController::class, 'update']);
     });
 });
 

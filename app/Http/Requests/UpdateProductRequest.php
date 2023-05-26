@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can(Role::UPDATE_PRODUCT);
     }
 
     /**
@@ -22,7 +23,13 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'sku' => 'string|required|exists:products,sku',
+            'name' => 'string|required',
+            'price' => 'sometimes|integer|min:0',
+            'amount' => 'sometimes|integer|min:0',
+            'description' => 'sometimes|string',
+            'additional_info' => 'sometimes|string',
+            'avg_rating' => 'sometimes|numeric|min:0'
         ];
     }
 }
