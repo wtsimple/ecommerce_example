@@ -128,6 +128,4 @@ class ProductTest extends TestCase
             $this->assertDatabaseHas('products', $beforeUpdateData);
         }
     }
-
-    // guest user cannot create/edit/delete product
 }

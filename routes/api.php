@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'user'])
 Route::prefix('')->group(function () {
     // Anybody can read
     Route::get('/product/{product}', [ProductController::class, 'show']);
+    Route::get('/product/', [ProductController::class, 'index']);
     // CUD requires authentication
     Route::prefix('')->middleware('auth:sanctum')->group(function() {
         Route::post('/product', [ProductController::class, 'store']);

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Spatie\Tags\Tag;
 
 /** @mixin \App\Models\Product */
 class ProductResource extends JsonResource
@@ -22,7 +23,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'additional_info' => $this->additional_info,
             'avg_rating' => $this->avg_rating,
-            'tags' => $this->tags,
+            'tags' => $this->tags->map(function (Tag $tag){return $tag->slug;})->toArray(),
             'category' => $this->category
         ];
     }

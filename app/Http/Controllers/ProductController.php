@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\Role;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
@@ -14,9 +16,21 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(SearchProductRequest $request)
     {
-        //
+        $perPage = 10;
+
+        $query = Product::whereRaw('1=1');
+        $exactMatchAttributes = ['sku', 'name', 'category'];
+        foreach ($exactMatchAttributes as $attribute) {
+            if ($request->has($attribute)) {
+                $query = $query->where($attribute, $request->input($attribute));
+            }
+        }
+
+        $collection = ProductResource::collection($query->paginate($perPage));
+
+        return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage);
     }
 
     /**
