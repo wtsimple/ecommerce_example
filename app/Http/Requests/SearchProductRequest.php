@@ -13,7 +13,9 @@ class SearchProductRequest extends FormRequest
             'sku' => 'sometimes|string|exists:products,sku',
             'category' => 'sometimes|string|exists:categories,name',
             'tags' => 'sometimes|array',
-            'rating_higher_than' => 'sometimes|numeric|min:0|max:5'
+            'rating_higher_than' => 'sometimes|numeric|min:0|max:5',
+            'min_price' => 'sometimes|int|min:0',
+            'max_price' => 'sometimes|int|min:0',
         ];
     }
 

@@ -20,19 +20,41 @@ class ProductController extends Controller
     {
         $perPage = 10;
 
+        // start with dummy query
         $query = Product::whereRaw('1=1');
+
+        // exact matching attributes
         $exactMatchAttributes = ['sku', 'name', 'category'];
         foreach ($exactMatchAttributes as $attribute) {
             if ($request->has($attribute)) {
-                $query = $query->where($attribute, $request->input($attribute));
+                $query = $query->where($attribute, '=', $request->input($attribute));
             }
         }
-        if ($request->has('tags') && count($request->input('tags')) > 0) {
-            $query = $query->withAnyTags($request->input('tags'));
+
+        // lower bound attributes
+        $lowerBoundAttributes = [
+            'rating_higher_than' => 'avg_rating',
+            'min_price' => 'price'
+        ];
+        foreach ($lowerBoundAttributes as $requestKey => $attribute) {
+            if ($request->has($requestKey)) {
+                $query = $query->where($attribute, '>=', $request->input($requestKey));
+            }
         }
 
-        if ($request->has('rating_higher_than')) {
-            $query = $query->where('avg_rating', '>=', $request->input('rating_higher_than'));
+        // upper bound attributes
+        $lowerBoundAttributes = [
+            'max_price' => 'price',
+        ];
+        foreach ($lowerBoundAttributes as $requestKey => $attribute) {
+            if ($request->has($requestKey)) {
+                $query = $query->where($attribute, '<=', $request->input($requestKey));
+            }
+        }
+
+        // tags
+        if ($request->has('tags') && count($request->input('tags')) > 0) {
+            $query = $query->withAnyTags($request->input('tags'));
         }
 
         $collection = ProductResource::collection($query->paginate($perPage));
@@ -40,13 +62,6 @@ class ProductController extends Controller
         return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -67,14 +82,6 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         return new ProductResource($product);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
-    {
-        //
     }
 
     /**

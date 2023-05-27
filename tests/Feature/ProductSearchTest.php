@@ -58,6 +58,22 @@ class ProductSearchTest extends TestCase
         $this->assertContainsSingleProduct($res, $this->products[2]);
     }
 
+    public function test_it_can_find_products_by_price_range()
+    {
+        foreach ($this->products as $product) {
+            $product->price = 200;
+        }
+        $this->products[2]->price = 300;
+        $this->products->map(function ($prod) {$prod->save();});
+
+        $res = $this->call('GET', '/api/product', [
+            'min_price' => 250,
+            'max_price' => 400,
+        ]);
+
+        $this->assertContainsSingleProduct($res, $this->products[2]);
+    }
+
 
 
     private function assertContainsSingleProduct(TestResponse $res, Product $product): void
