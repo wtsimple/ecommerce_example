@@ -13,7 +13,6 @@ class SearchProductRequest extends FormRequest
             'sku' => 'sometimes|string|exists:products,sku',
             'category' => 'sometimes|string|exists:categories,name',
             'tags' => 'sometimes|array',
-            'tags.*' => 'sometimes|exists:tags,slug',
         ];
     }
 

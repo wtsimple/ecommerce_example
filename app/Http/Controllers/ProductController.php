@@ -27,6 +27,9 @@ class ProductController extends Controller
                 $query = $query->where($attribute, $request->input($attribute));
             }
         }
+        if ($request->has('tags') && count($request->input('tags')) > 0) {
+            $query = $query->withAnyTags($request->input('tags'));
+        }
 
         $collection = ProductResource::collection($query->paginate($perPage));
 
