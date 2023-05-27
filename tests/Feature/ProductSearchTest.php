@@ -43,6 +43,23 @@ class ProductSearchTest extends TestCase
         $this->assertContainsSingleProduct($res, $this->products[1]);
     }
 
+    public function test_it_can_find_products_by_ratings()
+    {
+        foreach ($this->products as $product) {
+            $product->avg_rating = 3.5;
+        }
+        $this->products[2]->avg_rating = 4.5;
+        $this->products->map(function ($prod) {$prod->save();});
+
+        $res = $this->call('GET', '/api/product', [
+            'rating_higher_than' => 4.0
+        ]);
+
+        $this->assertContainsSingleProduct($res, $this->products[2]);
+    }
+
+
+
     private function assertContainsSingleProduct(TestResponse $res, Product $product): void
     {
         $res->assertOk()

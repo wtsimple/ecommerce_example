@@ -31,6 +31,10 @@ class ProductController extends Controller
             $query = $query->withAnyTags($request->input('tags'));
         }
 
+        if ($request->has('rating_higher_than')) {
+            $query = $query->where('avg_rating', '>=', $request->input('rating_higher_than'));
+        }
+
         $collection = ProductResource::collection($query->paginate($perPage));
 
         return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage);
