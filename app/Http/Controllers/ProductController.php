@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Role;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -55,6 +56,15 @@ class ProductController extends Controller
         // tags
         if ($request->has('tags') && count($request->input('tags')) > 0) {
             $query = $query->withAnyTags($request->input('tags'));
+        }
+
+        // full text search
+        if ($request->has('text_query')) {
+            $textToMatch = $request->input('text_query');
+            $escapedText = DB::connection()->getPdo()->quote('%' . $textToMatch . '%');
+            $query = $query->whereRaw(
+                "(description like $escapedText OR additional_info like $escapedText)"
+            );
         }
 
         $collection = ProductResource::collection($query->paginate($perPage));

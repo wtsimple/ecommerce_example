@@ -16,6 +16,7 @@ class SearchProductRequest extends FormRequest
             'rating_higher_than' => 'sometimes|numeric|min:0|max:5',
             'min_price' => 'sometimes|int|min:0',
             'max_price' => 'sometimes|int|min:0',
+            'text_query' => 'sometimes|string'
         ];
     }
 

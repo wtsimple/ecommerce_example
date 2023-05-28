@@ -74,6 +74,18 @@ class ProductSearchTest extends TestCase
         $this->assertContainsSingleProduct($res, $this->products[2]);
     }
 
+    public function test_it_can_find_products_by_text_search()
+    {
+        $this->products[3]->description = 'This is a shiny new awesome description that other products lack';
+        $this->products[3]->save();
+
+        $res = $this->call('GET', '/api/product', [
+            'text_query' => 'awesome description',
+        ]);
+
+        $this->assertContainsSingleProduct($res, $this->products[3]);
+    }
+
 
 
     private function assertContainsSingleProduct(TestResponse $res, Product $product): void
