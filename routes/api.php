@@ -27,12 +27,12 @@ Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'user'])
 // Unauthenticated
 Route::get('/product/', [ProductController::class, 'index']);
 Route::get('/product/count', [ProductController::class, 'count']);
-Route::get('/product/{product}', [ProductController::class, 'show']);
+Route::get('/product/sku/{product}', [ProductController::class, 'show']);
 // Authenticated
 Route::prefix('')->middleware('auth:sanctum')->group(function() {
     Route::post('/product', [ProductController::class, 'store']);
-    Route::delete('/product/{product}', [ProductController::class, 'destroy']);
-    Route::patch('/product/{product}', [ProductController::class, 'update']);
+    Route::delete('/product/sku/{product}', [ProductController::class, 'destroy']);
+    Route::patch('/product/sku/{product}', [ProductController::class, 'update']);
 });
 
 // ---- PURCHASES ROUTES -----------------

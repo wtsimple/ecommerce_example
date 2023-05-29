@@ -18,14 +18,17 @@ class ProductTest extends TestCase
         parent::setUp();
         $admin = UserFactory::createOneAdmin();
         $editor = UserFactory::createOneEditor();
-        $this->privilegedUsers = [$admin, $editor];
+        $this->privilegedUsers = [
+            'admin' => $admin,
+            'editor' => $editor
+        ];
     }
 
     public function test_guest_user_can_read_product()
     {
         $product = Product::factory()->createOne();
 
-        $res = $this->getJson("/api/product/$product->sku");
+        $res = $this->getJson("/api/product/sku/$product->sku");
 
         $res->assertOk()->assertJson(function (AssertableJson $json) use ($product) {
             $json->where('data.sku', $product->sku);
@@ -45,7 +48,7 @@ class ProductTest extends TestCase
 
             $productToDelete = Product::factory()->createOne();
             $this->assertDatabaseHas('products', ['sku' => $productToDelete->sku]);
-            $res = $this->deleteJson("/api/product/$productToDelete->sku");
+            $res = $this->deleteJson("/api/product/sku/$productToDelete->sku");
             $res->assertOk();
             // verify product was (soft) deleted
             $productsInDB = Product::where(['sku' => $productToDelete->sku])->count();
@@ -76,7 +79,7 @@ class ProductTest extends TestCase
 
             $productToUpdate = Product::factory()->createOne();
             $updateData = Product::factory()->makeOne(['sku' => $productToUpdate->sku])->toArray();
-            $res = $this->patchJson("/api/product/$productToUpdate->sku", $updateData);
+            $res = $this->patchJson("/api/product/sku/$productToUpdate->sku", $updateData);
             $res->assertOk()->assertJson(function (AssertableJson $json) use ($updateData) {
                 foreach ($updateData as $key => $val) {
                     $json->where('data.' . $key, $val);
@@ -109,7 +112,7 @@ class ProductTest extends TestCase
             // deletion fails
             $productToDelete = Product::factory()->createOne();
             $this->assertDatabaseHas('products', ['sku' => $productToDelete->sku]);
-            $res = $this->deleteJson("/api/product/$productToDelete->sku");
+            $res = $this->deleteJson("/api/product/sku/$productToDelete->sku");
             $res->assertStatus($expectedError);
             $this->assertDatabaseHas('products', ['sku' => $productToDelete->sku]);
 
@@ -122,7 +125,7 @@ class ProductTest extends TestCase
             // update fails
             $productToUpdate = Product::factory()->createOne();
             $updateData = Product::factory()->makeOne(['sku' => $productToUpdate->sku])->toArray();
-            $res = $this->patchJson("/api/product/$productToUpdate->sku", $updateData);
+            $res = $this->patchJson("/api/product/sku/$productToUpdate->sku", $updateData);
             $res->assertStatus($expectedError);
             $beforeUpdateData = $productToUpdate->toArray();
             unset($beforeUpdateData['updated_at']);
