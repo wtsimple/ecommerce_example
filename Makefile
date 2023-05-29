@@ -2,5 +2,5 @@
 test:
 	php artisan test
 
-build_docs:
+docs:
 	php artisan scribe:generate

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,6 @@ Route::prefix('')->middleware('auth:sanctum')->group(function() {
 });
 
 // ---- PURCHASES ROUTES -----------------
-Route::post('/purchase', [PurchaseController::class, 'store']);
+Route::post('/purchase', [PurchaseController::class, 'buy']);
 
 
