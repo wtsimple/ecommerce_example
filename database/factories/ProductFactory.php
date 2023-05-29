@@ -24,7 +24,7 @@ class ProductFactory extends Factory
             'amount' => $this->faker->numberBetween(0, 100),
             'description' => $this->faker->text(),
             'additional_info' => $this->faker->text(),
-            'avg_rating' => $this->faker->randomFloat(2,0,5),
+            'avg_rating' => $this->faker->randomFloat(2,3.1,3.9),
             'tags' => ['tag1', 'tag2'],
             'category' => Category::factory(),
         ];
