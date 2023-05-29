@@ -52,7 +52,7 @@ class ProductSalesTest extends TestCase
         $res->assertStatus(401);
     }
 
-    public function test_admins_can_see_list_of_purchases_over_a_time_period()
+    public function test_admins_can_see_purchases_and_total_revenue_over_a_time_period()
     {
         $purchases = Purchase::factory(5)->create(['updated_at' => now(), 'created_at' => now()]);
 
@@ -72,8 +72,14 @@ class ProductSalesTest extends TestCase
                     $json->where("data.$i.total_paid", $purchases[$i]->total_paid);
                 }
             });
+
+        $resTotalRevenue = $this->call('GET', '/api/purchase/revenue', [
+            'from' => now('utc')->subMinutes(30)->toIso8601String(),
+            'to' => now('utc')->addMinutes(30)->toIso8601String(),
+        ]);
+        $resTotalRevenue->assertOk()->assertJson([
+            'data' => ['total_revenue' => $purchases->sum('total_paid')]
+        ]);
     }
-    // admins can see the list of purchases over a period of time
-    // admins can see total revenue ove a period of time
     // admins can see a list of products out of stock
 }

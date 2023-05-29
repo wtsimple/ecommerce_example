@@ -40,6 +40,7 @@ Route::prefix('')->middleware('auth:sanctum')->group(function() {
 Route::prefix('')->middleware('auth:sanctum')->group(function () {
     Route::post('/purchase', [PurchaseController::class, 'buy']);
     Route::get('/purchase', [PurchaseController::class, 'index']);
+    Route::get('/purchase/revenue', [PurchaseController::class, 'revenue']);
 });
 
 

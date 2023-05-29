@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ListPurchasesRequest;
 use App\Http\Requests\BuyRequest;
-use App\Http\Resources\ProductResource;
+use App\Http\Requests\ListPurchasesRequest;
 use App\Http\Resources\PurchaseResource;
 use App\Models\Product;
 use App\Models\Purchase;
+use App\Services\PurchasesListingService;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -18,22 +17,30 @@ class PurchaseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(ListPurchasesRequest $request)
+    public function index(ListPurchasesRequest $request, PurchasesListingService $service)
     {
-        $perPage = $request->input('per_page', 10);
-        $query = Purchase::orderByDesc('created_at');
-        if ($request->has('from')) {
-            $from = Carbon::parse($request->input('from'));
-            $query = $query->where('created_at', '>=', $from);
-        }
-        if ($request->has('to')) {
-            $to = Carbon::parse($request->input('to'));
-            $query = $query->where('created_at', '<=', $to);
-        }
+        $query = $service->getPurchaseListQuery(
+            $request->input('from'), $request->input('to'));
 
+        $perPage = $request->input('per_page', 10);
         $collection = PurchaseResource::collection($query->paginate($perPage));
 
         return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage);
+    }
+
+    /**
+     * Count total revenue over a time period
+     */
+    public function revenue(ListPurchasesRequest $request, PurchasesListingService $service)
+    {
+        $query = $service->getPurchaseListQuery(
+            $request->input('from'), $request->input('to'));
+
+        return response([
+            'data' => [
+                'total_revenue' => $query->sum('total_paid'),
+            ]
+        ]);
     }
 
     public function buy(BuyRequest $request)
