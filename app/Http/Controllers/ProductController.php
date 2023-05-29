@@ -19,12 +19,13 @@ class ProductController extends Controller
      */
     public function index(SearchProductRequest $request, ProductSearchService $service)
     {
-        $perPage = 10;
+        $perPage = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
         $query = $service->buildSearchQuery($request);
 
         $collection = ProductResource::collection($query->paginate($perPage));
 
-        return new LengthAwarePaginator($collection->forPage(null, $perPage), $query->count(), $perPage);
+        return new LengthAwarePaginator($collection->forPage($page, $perPage), $query->count(), $perPage, $page);
     }
 
     public function count(SearchProductRequest $request, ProductSearchService $service)

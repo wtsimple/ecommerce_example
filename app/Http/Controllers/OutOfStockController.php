@@ -18,6 +18,6 @@ class OutOfStockController extends Controller
 
         $collection = ProductResource::collection($query->paginate($perPage));
 
-        return new LengthAwarePaginator($collection->forPage($page, $perPage), Product::count(), $perPage);
+        return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage, $page);
     }
 }
