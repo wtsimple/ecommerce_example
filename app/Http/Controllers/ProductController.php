@@ -8,68 +8,30 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\Role;
+use App\Services\ProductSearchService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(SearchProductRequest $request)
+    public function index(SearchProductRequest $request, ProductSearchService $service)
     {
         $perPage = 10;
-
-        // start with dummy query
-        $query = Product::whereRaw('1=1');
-
-        // exact matching attributes
-        $exactMatchAttributes = ['sku', 'name', 'category'];
-        foreach ($exactMatchAttributes as $attribute) {
-            if ($request->has($attribute)) {
-                $query = $query->where($attribute, '=', $request->input($attribute));
-            }
-        }
-
-        // lower bound attributes
-        $lowerBoundAttributes = [
-            'rating_higher_than' => 'avg_rating',
-            'min_price' => 'price'
-        ];
-        foreach ($lowerBoundAttributes as $requestKey => $attribute) {
-            if ($request->has($requestKey)) {
-                $query = $query->where($attribute, '>=', $request->input($requestKey));
-            }
-        }
-
-        // upper bound attributes
-        $lowerBoundAttributes = [
-            'max_price' => 'price',
-        ];
-        foreach ($lowerBoundAttributes as $requestKey => $attribute) {
-            if ($request->has($requestKey)) {
-                $query = $query->where($attribute, '<=', $request->input($requestKey));
-            }
-        }
-
-        // tags
-        if ($request->has('tags') && count($request->input('tags')) > 0) {
-            $query = $query->withAnyTags($request->input('tags'));
-        }
-
-        // full text search
-        if ($request->has('text_query')) {
-            $textToMatch = $request->input('text_query');
-            $escapedText = DB::connection()->getPdo()->quote('%' . $textToMatch . '%');
-            $query = $query->whereRaw(
-                "(description like $escapedText OR additional_info like $escapedText)"
-            );
-        }
+        $query = $service->buildSearchQuery($request);
 
         $collection = ProductResource::collection($query->paginate($perPage));
 
         return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage);
+    }
+
+    public function count(SearchProductRequest $request, ProductSearchService $service)
+    {
+        $query = $service->buildSearchQuery($request);
+
+        return response(['count' => $query->count()]);
     }
 
 
