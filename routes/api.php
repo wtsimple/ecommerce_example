@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OutOfStockController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Models\User;
@@ -33,6 +34,7 @@ Route::prefix('')->middleware('auth:sanctum')->group(function() {
     Route::post('/product', [ProductController::class, 'store']);
     Route::delete('/product/sku/{product}', [ProductController::class, 'destroy']);
     Route::patch('/product/sku/{product}', [ProductController::class, 'update']);
+    Route::get('/product/out-of-stock', [OutOfStockController::class, 'index']);
 });
 
 // ---- PURCHASES ROUTES -----------------

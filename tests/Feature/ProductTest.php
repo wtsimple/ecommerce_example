@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\User;
 use Database\Factories\UserFactory;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -87,6 +89,25 @@ class ProductTest extends TestCase
             });
             $this->assertDatabaseHas('products', $updateData);
         }
+    }
+
+    public function test_admin_can_list_out_of_stock_products()
+    {
+        Sanctum::actingAs($this->privilegedUsers['admin']);
+        $products = Product::factory(5)->create(['amount' => 0]);
+
+        $res = $this->getJson('/api/product/out-of-stock');
+        $res->assertOk()
+            ->assertJsonCount(5, 'data')
+            ->assertJson(function (AssertableJson $json) use ($products) {
+                $json->etc();
+                foreach ($products as $prodKey => $product) {
+                    $expectedData = (new ProductResource($product))->toArray([]);
+                    foreach ($expectedData as $prodAttribute => $val) {
+                        $json->where("data.$prodKey.$prodAttribute", $val);
+                    }
+                }
+            });
     }
 
 

@@ -24,7 +24,7 @@ class ProductController extends Controller
 
         $collection = ProductResource::collection($query->paginate($perPage));
 
-        return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage);
+        return new LengthAwarePaginator($collection->forPage(null, $perPage), $query->count(), $perPage);
     }
 
     public function count(SearchProductRequest $request, ProductSearchService $service)
