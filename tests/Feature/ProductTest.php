@@ -47,7 +47,9 @@ class ProductTest extends TestCase
             $this->assertDatabaseHas('products', ['sku' => $productToDelete->sku]);
             $res = $this->deleteJson("/api/product/$productToDelete->sku");
             $res->assertOk();
-            $this->assertDatabaseMissing('products', ['sku' => $productToDelete->sku]);
+            // verify product was (soft) deleted
+            $productsInDB = Product::where(['sku' => $productToDelete->sku])->count();
+            $this->assertEquals(0, $productsInDB);
         }
 
     }
