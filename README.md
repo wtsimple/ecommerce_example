@@ -22,7 +22,7 @@ sudo apt install php8.1-cli php8.1-dom php8.1-xml php8.1-curl \
 php8.1-zip php8.1-sqlite3 php8.1-mbstring 
 ```
 
-### Install with make
+### Install project with make
 
 ```shell
 # basic installation with sqlite
@@ -33,7 +33,7 @@ make serve
 ```
 
 
-### Install without make
+### Install project without make
 
 ```shell
 # This does the same as "make example_install"
