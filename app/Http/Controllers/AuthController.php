@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Group;
+use Knuckles\Scribe\Attributes\Response;
 
 #[Group('Auth')]
 class AuthController extends Controller
@@ -39,6 +40,7 @@ class AuthController extends Controller
      * @param LoginRequest $request
      * @return array
      */
+    #[Response(['user' => 33, 'token' => 'random_looking_token_here'], status: 200, description: "Successful login")]
     public function login(LoginRequest $request)
     {
         $user = Auth::user();
