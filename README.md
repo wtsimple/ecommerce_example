@@ -32,6 +32,11 @@ make serve
 # visit the docs page at localhost:8000/docs to see documentation
 ```
 
+Run all tests
+```shell
+make test
+```
+
 
 ### Install project without make
 
@@ -48,6 +53,11 @@ php artisan test
 # start development server
 php artisan serve
 # visit the docs page at localhost:8000/docs to see documentation
+```
+
+Run all tests
+```shell
+php artisan test
 ```
 
 ### Promote a user to admin
