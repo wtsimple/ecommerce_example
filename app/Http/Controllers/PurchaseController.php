@@ -11,12 +11,16 @@ use App\Services\PurchasesListingService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Knuckles\Scribe\Attributes\Authenticated;
+use Knuckles\Scribe\Attributes\Group;
 
+#[Group('Purchases')]
 class PurchaseController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List purchases
      */
+    #[Authenticated]
     public function index(ListPurchasesRequest $request, PurchasesListingService $service)
     {
         $query = $service->getPurchaseListQuery(
@@ -29,8 +33,9 @@ class PurchaseController extends Controller
     }
 
     /**
-     * Count total revenue over a time period
+     * Get total revenue over time period
      */
+    #[Authenticated]
     public function revenue(ListPurchasesRequest $request, PurchasesListingService $service)
     {
         $query = $service->getPurchaseListQuery(
@@ -43,6 +48,10 @@ class PurchaseController extends Controller
         ]);
     }
 
+    /**
+     * Make a purchase
+     */
+    #[Authenticated]
     public function buy(BuyRequest $request)
     {
         DB::beginTransaction();
@@ -69,13 +78,5 @@ class PurchaseController extends Controller
                 'error_msg' => "Product {$product->name} is out of stock"
             ], 400);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Purchase $purchase)
-    {
-        //
     }
 }

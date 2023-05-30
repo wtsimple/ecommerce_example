@@ -11,11 +11,14 @@ use App\Models\Role;
 use App\Services\ProductSearchService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Knuckles\Scribe\Attributes\Authenticated;
+use Knuckles\Scribe\Attributes\Group;
 
+#[Group('Products')]
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Product search
      */
     public function index(SearchProductRequest $request, ProductSearchService $service)
     {
@@ -28,6 +31,9 @@ class ProductController extends Controller
         return new LengthAwarePaginator($collection->forPage($page, $perPage), $query->count(), $perPage, $page);
     }
 
+    /**
+     * Count products matching search
+     */
     public function count(SearchProductRequest $request, ProductSearchService $service)
     {
         $query = $service->buildSearchQuery($request);
@@ -37,8 +43,17 @@ class ProductController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * Get single product
      */
+    public function show(Product $product)
+    {
+        return new ProductResource($product);
+    }
+
+    /**
+     * Create product
+     */
+    #[Authenticated]
     public function store(StoreProductRequest $request)
     {
         $product = new Product($request->all());
@@ -50,16 +65,9 @@ class ProductController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Update product
      */
-    public function show(Product $product)
-    {
-        return new ProductResource($product);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
+    #[Authenticated]
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->all());
@@ -68,8 +76,9 @@ class ProductController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * (Soft) delete product
      */
+    #[Authenticated]
     public function destroy(Product $product)
     {
         if (!Auth::user()->can(Role::DELETE_PRODUCT)) {

@@ -7,6 +7,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Group;
 
 #[Group('Auth')]
@@ -30,6 +31,12 @@ class AuthController extends Controller
         $user->save();
     }
 
+    /**
+     * Login
+     *
+     * @param LoginRequest $request
+     * @return array
+     */
     public function login(LoginRequest $request)
     {
         $user = Auth::user();
@@ -45,6 +52,13 @@ class AuthController extends Controller
         ];
     }
 
+    /**
+     * Get current user
+     *
+     * @param Request $request
+     * @return User|mixed
+     */
+    #[Authenticated]
     public function user(Request $request)
     {
         return $request->user();
