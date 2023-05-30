@@ -29,6 +29,8 @@ class AuthController extends Controller
         $user->password = $request->input('password');
         $user->name = $request->input('name');
         $user->save();
+
+        return $user;
     }
 
     /**

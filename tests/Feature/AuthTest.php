@@ -21,7 +21,7 @@ class AuthTest extends TestCase
             'confirm_password' => $pass
         ]);
 
-        $response->assertOk();
+        $response->assertStatus(201);
 
         $this->assertDatabaseHas('users', ['email' => $email, 'name' => $name]);
     }
