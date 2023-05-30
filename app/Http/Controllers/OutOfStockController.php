@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListOutOfStockProductsRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Group;
@@ -15,11 +15,11 @@ class OutOfStockController extends Controller
     /**
      * List out-of-stock products
      *
-     * @param Request $request
+     * @param ListOutOfStockProductsRequest $request
      * @return LengthAwarePaginator
      */
     #[Authenticated]
-    public function index(Request $request)
+    public function index(ListOutOfStockProductsRequest $request)
     {
         $perPage = $request->input('per_page', 100);
         $page = $request->input('page', 1);
