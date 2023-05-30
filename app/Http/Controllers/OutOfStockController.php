@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Group;
+use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Products')]
 class OutOfStockController extends Controller
@@ -15,10 +16,13 @@ class OutOfStockController extends Controller
     /**
      * List out-of-stock products
      *
+     * Requires 'list out of stock products' capability
+     *
      * @param ListOutOfStockProductsRequest $request
      * @return LengthAwarePaginator
      */
     #[Authenticated]
+    #[ResponseFromApiResource(ProductResource::class, Product::class, collection: true, paginate: 10)]
     public function index(ListOutOfStockProductsRequest $request)
     {
         $perPage = $request->input('per_page', 100);

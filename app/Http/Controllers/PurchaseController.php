@@ -13,14 +13,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Group;
+use Knuckles\Scribe\Attributes\Response;
+use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Purchases')]
 class PurchaseController extends Controller
 {
     /**
      * List purchases
+     *
+     * Requires 'list all purchases' capabilities
      */
     #[Authenticated]
+    #[ResponseFromApiResource(PurchaseResource::class, Purchase::class, collection: true, paginate: 10)]
     public function index(ListPurchasesRequest $request, PurchasesListingService $service)
     {
         $query = $service->getPurchaseListQuery(
@@ -29,13 +34,16 @@ class PurchaseController extends Controller
         $perPage = $request->input('per_page', 10);
         $collection = PurchaseResource::collection($query->paginate($perPage));
 
-        return new LengthAwarePaginator($collection->forPage(null, $perPage), Product::count(), $perPage);
+        return new LengthAwarePaginator($collection->forPage(null, $perPage), $query->count(), $perPage);
     }
 
     /**
      * Get total revenue over time period
+     *
+     * Requires 'list all purchases' capabilities
      */
     #[Authenticated]
+    #[Response(["data" => ["total_revenue" => 8125]], status: 200, description: "Aggregate revenue over time period")]
     public function revenue(ListPurchasesRequest $request, PurchasesListingService $service)
     {
         $query = $service->getPurchaseListQuery(
@@ -52,6 +60,7 @@ class PurchaseController extends Controller
      * Make a purchase
      */
     #[Authenticated]
+    #[ResponseFromApiResource(PurchaseResource::class, Purchase::class)]
     public function buy(BuyRequest $request)
     {
         DB::beginTransaction();
@@ -70,7 +79,7 @@ class PurchaseController extends Controller
 
             DB::commit();
 
-            return response(['purchase' => $purchase], 201);
+            return response(['data' => new PurchaseResource($purchase)], 201);
         } else {
             DB::rollBack();
             return response([
